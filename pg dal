@@ -1,0 +1,266 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data.SqlClient;
+using SAMS_PG_Entity;
+
+namespace SAMS_PG_DAL
+{
+    public partial interface IPGCAFDAL
+    {
+     
+        string ManageApplicantInfo(ApplicantInfo obj);
+        List<ApplicantInfo> GetApplicantDetails(ApplicantInfo obj);
+        List<Qualification> GetApplicantQualification(Qualification obj);
+        List<ApplicantInfo> BSEBoardMark(ApplicantInfo objApplicant);
+        List<ApplicantInfo> CHSEBoardMark(ApplicantInfo objApplicant);
+        List<ApplicantInfo> GraduationBoardMark(ApplicantInfo objApplicant);
+    }
+
+    public partial class PGCAFDAL : IPGCAFDAL
+    {
+        string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings[DataBaseHelper.ConnectionString].ConnectionString;
+        string MarkconnectionString = System.Configuration.ConfigurationManager.ConnectionStrings[DataBaseHelper.ResultConnectionString].ConnectionString;
+        string Output;
+        object param = new object();
+        #region "Applicant Info Entry"
+        public string ManageApplicantInfo(ApplicantInfo objApplicant)
+        {
+            object[] arr = new object[] { 
+                                        "@P_chrAction",objApplicant.Action,
+                                        "@P_intUserID",objApplicant.UserID,
+                                        "@P_intApplicantID",objApplicant.ApplicantID,
+	                                    "@P_vchCourseIDs",objApplicant.CourseIDs,
+	                                    "@P_intApplicantTypeID",objApplicant.ApplicantTypeID,
+	                                    "@P_vchApplicantName",objApplicant.ApplicantName,
+	                                    "@P_vchMotherName",objApplicant.MotherName,
+	                                    "@P_vchFatherName",objApplicant.FatherName,
+	                                    "@P_intGender",objApplicant.GenderID,
+	                                    "@P_dtmDOB",objApplicant.DOB,
+	                                    "@P_vchEmail",objApplicant.Email,
+	                                    "@P_vchMobileNo",objApplicant.MobileNo,
+	                                    "@P_vchAltMobileNo",objApplicant.AltMobileNo,
+	                                    "@P_intMaritalStatus",objApplicant.MaritalStatusID,
+	                                    "@P_intQuotaID",objApplicant.QuotaID,
+	                                    "@P_vchAddress1C",objApplicant.Address1C,
+	                                    "@P_vchAddress2C",objApplicant.Address2C,
+	                                    "@P_intCountryIDC",objApplicant.CountryIDC,
+	                                    "@P_intStateIDC",objApplicant.StateIDC,
+	                                    "@P_intDistrictIDC",objApplicant.DistrictIDC,
+	                                    "@P_vchPINCodeC",objApplicant.PINCodeC,
+	                                    "@P_vchAddress1P",objApplicant.Address1P,
+	                                    "@P_vchAddress2P",objApplicant.Address2P,
+	                                    "@P_intCountryIDP",objApplicant.CountryIDP,
+	                                    "@P_intStateIDP",objApplicant.StateIDP,
+	                                    "@P_intDistrictIDP",objApplicant.DistrictIDP,
+	                                    "@P_vchPINCodeP",objApplicant.PINCodeP,
+	                                    "@P_intSocialCategoryID",objApplicant.SocialCategoryID,
+	                                    "@P_intReserveCategoryID",objApplicant.ReserveCategoryID,
+	                                    "@P_intDisabilityTypeID",objApplicant.DisabilityTypeID,
+	                                    "@P_intDisabilityPer",objApplicant.DisabilityPer,
+	                                    "@P_intIsInService",objApplicant.IsInService,
+	                                    "@P_intServiceTypeID",objApplicant.ServiceTypeID,
+	                                    "@P_intServiceDistrictID",objApplicant.ServiceDistrictID,
+	                                    "@P_vchServiceSchoolName",objApplicant.ServiceSchoolName,
+	                                    "@P_intCreatedBy",objApplicant.CreatedBy,
+	                                    "@P_intSubmitStatus",objApplicant.SubmitStatus,
+	                                    "@P_vchQualificationXML",objApplicant.QualificationXML,
+	                                    "@P_intStreamID",objApplicant.StreamID,
+	                                    "@P_intPreferenceTypeID",objApplicant.PreferenceTypeID,
+	                                    "@P_intSubjectID1",objApplicant.SubjectID1,
+	                                    "@P_intMarkSecured1",objApplicant.MarkSecured1,
+	                                    "@P_intSubjectID2",objApplicant.SubjectID2,
+	                                    "@P_intMarkSecured2",objApplicant.MarkSecured2,
+	                                    "@P_intSubjectID3",objApplicant.SubjectID3,
+	                                    "@P_intMarkSecured3",objApplicant.MarkSecured3,
+                                        "@P_vchMatricRollNo",objApplicant.MatricRollNo,
+                                        "@P_intAppearedOdia",objApplicant.AppearedOdia,
+                                        "@P_vchRegisteredMobileNo",objApplicant.RegisteredMobileNo,
+                                        "@P_vchAadharNo",objApplicant.AadharNo,
+                                        "@P_intOOTStateID",objApplicant.OOTStateID,
+                                        "@P_vchOtherDisability",objApplicant.OtherDisability,
+                                        "@P_intBIETQuotaID",objApplicant.BIETQuotaID,
+                                        "@P_intCertOdiaSainikBoard",objApplicant.CertSainikBoard,
+                                        "@P_intSportsCategoryID",objApplicant.SportsCategoryID,
+                                        "@P_vchSportsCategoryName",objApplicant.SportsCategoryName,
+                                        "@P_bitIsGCIssued",objApplicant.isGCIssued,
+                                        "@P_bitIsHindiStudied",objApplicant.IsHindiStudied,
+                                        "@P_bitIsRatnaPassed",objApplicant.IsRatnaPassed,
+                                        "@P_bitIsTeluguStudied",objApplicant.IsTeluguStudied,
+                                        "@P_bitIsUrduStudied",objApplicant.IsUrduStudied,
+                                        "@P_intCadreTypeID",objApplicant.CadreTypeID,
+	                                    "@P_intTeacherTypeID",objApplicant.TeacherTypeID,
+	                                    "@P_intSchoolStatusID",objApplicant.SchoolStatusID,
+	                                    "@P_vchPostHeld",objApplicant.PostHeld,
+	                                    "@P_vchSchoolAddress",objApplicant.SchoolAddress,
+	                                    "@P_vchSchoolPIN",objApplicant.SchoolPIN,
+	                                    "@P_dtmDateOfJoining",objApplicant.DateOfJoining,
+                                        "@P_intPETTypeID",objApplicant.PETTypeID,
+	                                    "@P_intCompLevelID",objApplicant.CompLevelID,
+                                        "@P_intRecognizedBy",objApplicant.RecognizedByID,
+                                        "@P_intPositionSecured",objApplicant.PositionSecuredID,
+                                        "@P_bitPEPassed",objApplicant.isPEPassed,
+                                        "@P_bitIsPresented",objApplicant.isPresented,
+                                        "@P_bitIsReadOlchiki",objApplicant.isReadOlchiki,
+                                        "@P_intHindiQualID",objApplicant.HindiQualID,
+                                        "@P_intPEQualID",objApplicant.PEQualID
+                                        };
+            try
+            {
+                Output = SqlHelper.ExecuteNonQuery(connectionString, "USP_PG_APPLICANTINFO_AED", out param, arr).ToString();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+
+
+            return param.ToString();
+        }
+        #endregion
+        #region "Get Applicant Details"
+        public List<ApplicantInfo> GetApplicantDetails(ApplicantInfo objApplicant)
+        {
+            SqlDataReader reader = null;
+            List<ApplicantInfo> list = new List<ApplicantInfo>();
+            object[] arr = new object[] { 
+                                    "@P_chrAction", objApplicant.Action,
+                                    "@P_intApplicantID", objApplicant.ApplicantID,
+                                    "@P_intUserID",objApplicant.UserID,
+                                    "@P_intCourseID",objApplicant.CourseID
+                                };
+            try
+            {
+                reader = (SqlDataReader)SqlHelper.ExecuteReader(connectionString, "USP_PG_APPLICANTINFO_VE", arr);
+                list = reader.DataReaderMapToList<ApplicantInfo>(MappingDirection.Auto);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            if (reader != null)
+            {
+                reader.Close();
+                reader.Dispose();
+            }
+
+            return list;
+        }
+        public List<Qualification> GetApplicantQualification(Qualification objApplicant)
+        {
+            SqlDataReader reader = null;
+            List<Qualification> list = new List<Qualification>();
+            object[] arr = new object[] { 
+                                    "@P_chrAction", objApplicant.Action,
+                                    "@P_intApplicantID", objApplicant.ApplicantID,
+                                    "@P_intUserID",objApplicant.UserID ,
+                                    "@P_intCourseID",objApplicant.CourseID
+                                };
+            try
+            {
+                reader = (SqlDataReader)SqlHelper.ExecuteReader(connectionString, "USP_PG_APPLICANTINFO_VE", arr);
+                list = reader.DataReaderMapToList<Qualification>(MappingDirection.Auto);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            if (reader != null)
+            {
+                reader.Close();
+                reader.Dispose();
+            }
+
+            return list;
+        }
+        #endregion
+        public List<ApplicantInfo> BSEBoardMark(ApplicantInfo objDCaf)
+        {
+            SqlDataReader reader = null;
+            List<ApplicantInfo> list = new List<ApplicantInfo>();
+            object[] objArr = new object[] { 
+                                "ACTION", objDCaf.Action,
+		                        "ROLLNO",objDCaf.MatricRollNo                              
+                 };
+            try
+            {
+                reader = (SqlDataReader)SqlHelper.ExecuteReader(MarkconnectionString, "USP_BED_BSERESULT", objArr);
+                list = reader.DataReaderMapToList<ApplicantInfo>(MappingDirection.Auto);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                    reader.Dispose();
+                }
+            }
+            return list;
+        }
+        public List<ApplicantInfo> CHSEBoardMark(ApplicantInfo objApplicant)
+        {
+            SqlDataReader reader = null;
+            List<ApplicantInfo> list = new List<ApplicantInfo>();
+            object[] objArr = new object[] {
+                                 "ACTION", objApplicant.Action,
+                                "ROLLNO", objApplicant.MatricRollNo,
+                                "STREAMID",objApplicant.StreamID
+                 };
+            try
+            {
+                reader = (SqlDataReader)SqlHelper.ExecuteReader(MarkconnectionString, "USP_PG_CHSERESULT", objArr);
+                list = reader.DataReaderMapToList<ApplicantInfo>(MappingDirection.Auto);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                    reader.Dispose();
+                }
+            }
+            return list;
+        }
+        public List<ApplicantInfo> GraduationBoardMark(ApplicantInfo objApplicant)
+        {
+            SqlDataReader reader = null;
+            List<ApplicantInfo> list = new List<ApplicantInfo>();
+            object[] objArr = new object[] {
+                                 "ACTION", objApplicant.Action,
+                                "ROLLNO", objApplicant.MatricRollNo,
+                                "STREAMID",objApplicant.StreamID
+                 };
+            try
+            {
+                reader = (SqlDataReader)SqlHelper.ExecuteReader(MarkconnectionString, "USP_PG_GRADUATIONRESULT", objArr);
+                list = reader.DataReaderMapToList<ApplicantInfo>(MappingDirection.Auto);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                    reader.Dispose();
+                }
+            }
+            return list;
+        }
+
+    }
+}

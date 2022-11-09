@@ -1,0 +1,36 @@
+private void fillHousing()
+        {
+
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand("propertyprebooking"))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@action", "house");
+
+                        cmd.Connection = con;
+                        using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            sda.Fill(dt);
+
+                            Ddl_Srvpd_name.DataSource = dt;
+                            Ddl_Srvpd_name.DataValueField = "housoingid";
+                            Ddl_Srvpd_name.DataTextField = "housingname";
+                            Ddl_Srvpd_name.DataBind();
+                            Ddl_Srvpd_name.Items.Insert(0, new ListItem("-Select-", "0"));
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response.Write("<script>alert('" + ex.Message + "'");
+            }
+
+
+        }

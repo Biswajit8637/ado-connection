@@ -1,3 +1,8 @@
+
+string conStr = ConfigurationManager.ConnectionStrings["myconn"].ConnectionString.ToString();
+
+
+
 private void fillHousing()
         {
 
